@@ -1,5 +1,5 @@
 #include "../include/Fighter.h"
-Fighter::Fighter(Stage* stage,Personaje*pa,Personaje*pb,MyEventReceiver *receiver,Grafico *grafico,ISoundEngine *engine_sonido)
+Fighter::Fighter(Stage* stage,Personaje*pa,Personaje*pb,Input *receiver,Grafico *grafico,ISoundEngine *engine_sonido)
 {
     //Engines
     this->receiver=receiver;
@@ -10,6 +10,8 @@ Fighter::Fighter(Stage* stage,Personaje*pa,Personaje*pb,MyEventReceiver *receive
     this->stage=stage;
     this->pa=pa;
     this->pb=pb;
+    pa->personaje_contrario=pb;
+    pb->personaje_contrario=pa;
 
     //Menu
     //loopMenu();
@@ -66,6 +68,7 @@ bool Fighter::getColisionHitBoxes(Personaje *atacante,Personaje* atacado)
 
 void Fighter::logica(Personaje* personaje,std::string input,int tiempo)
 {
+    input=personaje->estado_posicion+input;
     //avanzar tiempo
     personaje->tiempo_transcurrido++;
     //si se termino
@@ -81,56 +84,27 @@ void Fighter::loopJuego()
     irrklang::ISoundSource* shootSound = engine_sonido->addSoundSourceFromFile("resources/Stages/Sonidos/Fight1.wav");
     engine_sonido->play2D(shootSound);
 	std::string input="5";
+	std::string input2="5";
     f32 moveHorizontal = 0.f;
     f32 moveVertical = 0.f;
     int tiempo;
     bool tecla_arriba=false;
+    bool tecla_arriba2=false;
 	for (;;)
 	{
         //render
         render(pa,pb,stage);
         //logica
-        logica(pa,input,tiempo);
+        logica(pa,input2,tiempo);
         logica(pb,input,tiempo);
         tiempo = grafico->device->getTimer()->getTime();
         const SEvent::SJoystickEvent & joystickData = receiver->GetJoystickState();
         moveHorizontal =(f32)joystickData.Axis[SEvent::SJoystickEvent::AXIS_X] / 32767.f;
         moveVertical =(f32)joystickData.Axis[SEvent::SJoystickEvent::AXIS_Y] / -32767.f;
         input="5";
+        input2="5";
 
-        //Joystick
-        /*
-        if(moveHorizontal>0 && moveVertical>0)
-            input="9";
-        else if(moveHorizontal<0 && moveVertical>0)
-            input="7";
-        else if(moveHorizontal>0 && moveVertical<0)
-            input="3";
-        else if(moveHorizontal<0 && moveVertical<0)
-            input="1";
-        else if(moveVertical<0)
-            input="2";
-        else if(joystickData.IsButtonPressed(4))
-            input="e";
-        else if(moveHorizontal>0)
-            input="6";
-        else if(moveHorizontal<0)
-            input="4";
-        else if(moveVertical>0)
-            input="8";
-        else if(joystickData.IsButtonPressed(0))
-            input="a";
-        else if(joystickData.IsButtonPressed(1))
-            input="b";
-        else if(joystickData.IsButtonPressed(2))
-            input="c";
-        else if(joystickData.IsButtonPressed(3))
-            input="d";
-        else
-            tecla_arriba=true;
-        */
-
-        //Teclado
+        //Player 1 - kb
         if(receiver->IsKeyDown(irr::KEY_KEY_S) && receiver->IsKeyDown(irr::KEY_KEY_A))
             input="1";
         else if(receiver->IsKeyDown(irr::KEY_KEY_S) && receiver->IsKeyDown(irr::KEY_KEY_D))
@@ -163,6 +137,41 @@ void Fighter::loopJuego()
         }
         if(!receiver->IsKeyDown(irr::KEY_KEY_U) && !receiver->IsKeyDown(irr::KEY_KEY_I) && !receiver->IsKeyDown(irr::KEY_KEY_O) && !receiver->IsKeyDown(irr::KEY_KEY_J) && !receiver->IsKeyDown(irr::KEY_KEY_K) && !receiver->IsKeyDown(irr::KEY_KEY_L))
             tecla_arriba=true;
+
+
+        //Player 2 - Joy
+        if(moveHorizontal<0 && moveVertical<0)
+            input2="1";
+        else if(moveHorizontal>0 && moveVertical<0)
+            input2="3";
+        else if(moveHorizontal<0 && moveVertical>0)
+            input2="7";
+        else if(moveHorizontal>0 && moveVertical>0)
+            input2="9";
+        else if(moveVertical<0)
+            input2="2";
+        else if(moveHorizontal<0)
+            input2="4";
+        else if(moveHorizontal>0)
+            input2="6";
+        else if(moveVertical>0)
+            input2="8";
+        if(tecla_arriba2)
+        {
+            tecla_arriba2=false;
+            if(joystickData.IsButtonPressed(0))
+                input2="a";
+            else if(joystickData.IsButtonPressed(1))
+                input2="b";
+            else if(joystickData.IsButtonPressed(2))
+                input2="c";
+            else if(joystickData.IsButtonPressed(3))
+                input2="d";
+            else if(joystickData.IsButtonPressed(4))
+                input2="e";
+        }
+        if(!joystickData.IsButtonPressed(0) && !joystickData.IsButtonPressed(1) && !joystickData.IsButtonPressed(2) && !joystickData.IsButtonPressed(3) && !joystickData.IsButtonPressed(4) && !joystickData.IsButtonPressed(5))
+            tecla_arriba2=true;
 
         if(receiver->IsKeyDown(irr::KEY_KEY_Q))
             exit(0);

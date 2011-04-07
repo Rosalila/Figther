@@ -4,9 +4,7 @@ Personaje::Personaje(Barra hp,int px,int py,int a,char orientacion,Grafico* graf
 {
     setImagen("imagen_personaje",grafico->driver->getTexture("resources/Personajes/Ryu/Sprites/mover/saltar/arriba/01.png"));
     this->grafico=grafico;
-    saltando=false;
-    saltando_adelante=false;
-    saltando_atras=false;
+    estado_posicion="";
     frame_actual_saltando=0;
     tiempo_transcurrido=0;
     this->orientacion=orientacion;
@@ -118,42 +116,65 @@ void Personaje::agregarFrame(std::string movimiento, int duracion)
 {
     ((Movimiento*)movimientos[movimiento])->agregarFrame(duracion);
 }
-void Personaje::agregarModificador(std::string movimiento,int frame,video::ITexture* modificador,Personaje* personaje,std::string variable)
+void Personaje::agregarModificador(std::string movimiento,int frame,video::ITexture* modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario)
 {
-    ((Movimiento*)movimientos[movimiento])->frames[frame].agregarModificador(modificador,personaje,variable);
+    ((Movimiento*)movimientos[movimiento])->frames[frame].agregarModificador(modificador,personaje,variable,aplicar_a_contrario);
 }
-void Personaje::agregarModificador(std::string movimiento,int frame,int modificador,Personaje* personaje,std::string variable,bool relativo)
+void Personaje::agregarModificador(std::string movimiento,int frame,int modificador,Personaje* personaje,std::string variable,bool relativo,bool aplicar_a_contrario)
 {
-    ((Movimiento*)movimientos[movimiento])->frames[frame].agregarModificador(modificador,personaje,variable,relativo);
+    ((Movimiento*)movimientos[movimiento])->frames[frame].agregarModificador(modificador,personaje,variable,relativo,aplicar_a_contrario);
 }
-void Personaje::agregarModificador(std::string movimiento,int frame,Barra modificador,Personaje* personaje,std::string variable)
+void Personaje::agregarModificador(std::string movimiento,int frame,Barra modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario)
 {
-    ((Movimiento*)movimientos[movimiento])->frames[frame].agregarModificador(modificador,personaje,variable);
+    ((Movimiento*)movimientos[movimiento])->frames[frame].agregarModificador(modificador,personaje,variable,aplicar_a_contrario);
 }
-void Personaje::agregarModificador(std::string movimiento,int frame,vector <HitBox> modificador,Personaje* personaje,std::string variable)
+void Personaje::agregarModificador(std::string movimiento,int frame,vector <HitBox> modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario)
 {
-    ((Movimiento*)movimientos[movimiento])->frames[frame].agregarModificador(modificador,personaje,variable);
+    ((Movimiento*)movimientos[movimiento])->frames[frame].agregarModificador(modificador,personaje,variable,aplicar_a_contrario);
 }
 
 //Logica
-bool Personaje::ejectuarCancel(std::string input)
+bool Personaje::getColisionHitBoxes(HitBox hb_azul,HitBox hb_roja,int atacado_x,int atacado_y,int atacante_x,int atacante_y)
 {
-    int cancel_size=((Movimiento*)movimientos[input])->cancels.size();
-    for(int i=0;i<cancel_size;i++)
-        if(((Movimiento*)movimientos[input])->cancels[i]==movimiento_actual)
-        {
-            getMovimientoActual()->frame_actual=0;
-            movimiento_actual=input;
-            if(input=="7")
-                saltando_atras=true;
-            if(input=="8")
-                saltando=true;
-            if(input=="9")
-                saltando_adelante=true;
-            return true;
-        }
+    int x1r=hb_roja.p1x+atacante_x;
+    int y1r=hb_roja.p1y+atacante_y;
+    int x2r=hb_roja.p2x+atacante_x;
+    int y2r=hb_roja.p2y+atacante_y;
+
+    int x1a=hb_azul.p1x+atacado_x;
+    int y1a=hb_azul.p1y+atacado_y;
+    int x2a=hb_azul.p2x+atacado_x;
+    int y2a=hb_azul.p2y+atacado_y;
+
+    return (
+            (x1r<=x1a && x1a<=x2r && x2r<=x2a) ||
+            (x1r<=x1a && x1a<=x2a && x2a<=x2r) ||
+            (x1a<=x1r && x1r<=x2r && x2r<=x2a) ||
+            (x1a<=x1r && x1r<=x2a && x2a<=x2r)
+            )&&(
+            (y1r<=y1a && y1a<=y2r && y2r<=y2a) ||
+            (y1r<=y1a && y1a<=y2a && y2a<=y2r) ||
+            (y1a<=y1r && y1r<=y2r && y2r<=y2a) ||
+            (y1a<=y1r && y1r<=y2a && y2a<=y2r)
+            );
+}
+
+bool Personaje::getColisionHitBoxes(Personaje *atacante,Personaje* atacado)
+{
+    int ax=atacado->getEntero("posicion_x");
+    int ay=atacado->getEntero("posicion_y");
+    int rx=atacante->getEntero("posicion_x");
+    int ry=atacante->getEntero("posicion_y");
+
+    int hb_azul_size=atacado->getHitBoxes("azules").size();
+    int hb_roja_size=atacante->getHitBoxes("rojas").size();
+    for(int a=0;a<hb_azul_size;a++)
+        for(int r=0;r<hb_roja_size;r++)
+            if(getColisionHitBoxes(atacado->getHitBoxes("azules")[a],atacante->getHitBoxes("rojas")[r],ax,ay,rx,ry))
+                return true;
     return false;
 }
+
 bool Personaje::verificarFinDeMovimiento()
 {
     int frames_size=getMovimientoActual()->frames.size();
@@ -163,6 +184,36 @@ bool Personaje::verificarFinDeMovimiento()
         movimiento_actual="5";
         return true;
     }
+    return false;
+}
+bool Personaje::ejectuarCancel(std::string input)
+{
+            if(input=="7")
+                input="saltando_atras7";
+            if(input=="8")
+                input="saltando8";
+            if(input=="9")
+                input="saltando_adelante9";
+            if(input=="2")
+                input="agachado2";
+    int cancel_size=((Movimiento*)movimientos[input])->cancels.size();
+    for(int i=0;i<cancel_size;i++)
+        if(((Movimiento*)movimientos[input])->cancels[i]==movimiento_actual)
+        {
+            if(frame_actual_saltando==0 || (estado_posicion=="agachado" && input=="agachado5") || (estado_posicion=="agachado" && input=="5"))
+                estado_posicion="";
+            getMovimientoActual()->frame_actual=0;
+            movimiento_actual=input;
+            if(input=="saltando_atras7")
+                estado_posicion="saltando_atras";
+            if(input=="saltando8")
+                estado_posicion="saltando";
+            if(input=="saltando_adelante9")
+                estado_posicion="saltando_adelante";
+            if(input=="agachado2")
+                estado_posicion="agachado";
+            return true;
+        }
     return false;
 }
 bool Personaje::aplicarModificadores()
@@ -177,32 +228,49 @@ bool Personaje::aplicarModificadores()
             if(modificador.tipo=="imagen")
             {
                 ModificadorImagen* mod_imagen=(ModificadorImagen*)&modificador;
-                mod_imagen->personaje->setImagen(mod_imagen->variable,mod_imagen->modificador_imagen);
+                if(mod_imagen->aplicar_a_contrario)
+                {
+                    if(getColisionHitBoxes(this,personaje_contrario))
+                    {
+                        mod_imagen->personaje->personaje_contrario->setImagen(mod_imagen->variable,mod_imagen->modificador_imagen);
+                    }
+                }
+                else
+                    mod_imagen->personaje->setImagen(mod_imagen->variable,mod_imagen->modificador_imagen);
             }
             if(modificador.tipo=="entero")
             {
                 ModificadorEntero* mod_entero=(ModificadorEntero*)&modificador;
                 if(mod_entero->relativo)
-                    mod_entero->personaje->setEntero(mod_entero->variable,mod_entero->modificador_entero+getEntero(mod_entero->variable));
+                    if(mod_entero->aplicar_a_contrario)
+                        mod_entero->personaje->personaje_contrario->setEntero(mod_entero->variable,mod_entero->modificador_entero+getEntero(mod_entero->variable));
+                    else
+                        mod_entero->personaje->setEntero(mod_entero->variable,mod_entero->modificador_entero+getEntero(mod_entero->variable));
                 else
-                    mod_entero->personaje->setEntero(mod_entero->variable,mod_entero->modificador_entero);
+                    if(mod_entero->aplicar_a_contrario)
+                        mod_entero->personaje->personaje_contrario->setEntero(mod_entero->variable,mod_entero->modificador_entero);
+                    else
+                        mod_entero->personaje->setEntero(mod_entero->variable,mod_entero->modificador_entero);
             }
             if(modificador.tipo=="hitboxes")
             {
                 ModificadorHitboxes* mod_hitboxes=(ModificadorHitboxes*)&modificador;
-                mod_hitboxes->personaje->setHitBoxes(mod_hitboxes->variable,mod_hitboxes->modificador_hitbox);
+                if(mod_hitboxes->aplicar_a_contrario)
+                    mod_hitboxes->personaje->personaje_contrario->setHitBoxes(mod_hitboxes->variable,mod_hitboxes->modificador_hitbox);
+                else
+                    mod_hitboxes->personaje->setHitBoxes(mod_hitboxes->variable,mod_hitboxes->modificador_hitbox);
             }
         }
         getMovimientoActual()->frame_actual++;
         tiempo_transcurrido=0;
         return true;
     }
-    if(saltando)
+    if(estado_posicion=="saltando")
     {
         if(frame_actual_saltando==12)
         {
             frame_actual_saltando=0;
-            saltando=false;
+            estado_posicion="";
         }
         int desplazamiento=-1;
         if(frame_actual_saltando>=6)
@@ -210,12 +278,12 @@ bool Personaje::aplicarModificadores()
         setEntero("posicion_y",desplazamiento*20+getEntero("posicion_y"));
         frame_actual_saltando++;
     }
-    if(saltando_adelante)
+    if(estado_posicion=="saltando_adelante")
     {
         if(frame_actual_saltando==13)
         {
             frame_actual_saltando=0;
-            saltando_adelante=false;
+            estado_posicion="";
         }
         int desplazamiento=-1;
         if(frame_actual_saltando>=6)
@@ -225,12 +293,12 @@ bool Personaje::aplicarModificadores()
         setEntero("posicion_x",20+getEntero("posicion_x"));
         frame_actual_saltando++;
     }
-    if(saltando_atras)
+    if(estado_posicion=="saltando_atras")
     {
         if(frame_actual_saltando==13)
         {
             frame_actual_saltando=0;
-            saltando_atras=false;
+            estado_posicion="";
         }
         int desplazamiento=-1;
         if(frame_actual_saltando>=6)

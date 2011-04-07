@@ -9,8 +9,8 @@ public:
     //Engines
     ISoundEngine* engine_sonido;
     Grafico* grafico;
-    MyEventReceiver* receiver;
-    Fighter(Stage* stage,Personaje*pa,Personaje*pb,MyEventReceiver *receiver,Grafico *grafico,ISoundEngine *engine_sonido);
+    Input* receiver;
+    Fighter(Stage* stage,Personaje*pa,Personaje*pb,Input *receiver,Grafico *grafico,ISoundEngine *engine_sonido);
     //Logica
     bool getColisionHitBoxes(HitBox hb_azul,HitBox hb_roja,int atacado_x,int atacado_y,int atacante_x,int atacante_y);
     bool getColisionHitBoxes(Personaje *atacante,Personaje* atacado);

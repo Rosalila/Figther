@@ -1,5 +1,5 @@
 #include "../include/Menu.h"
-Menu::Menu(Stage* stage,Personaje *pa,Personaje *pb,ISoundEngine* engine_sonido,Grafico* grafico,MyEventReceiver* receiver)
+Menu::Menu(Stage* stage,Personaje *pa,Personaje *pb,ISoundEngine* engine_sonido,Grafico* grafico,Input* receiver)
 {
     this->stage=stage;
     this->pa=pa;

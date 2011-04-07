@@ -12,9 +12,9 @@ class Menu
     //Engines
     ISoundEngine* engine_sonido;
     Grafico* grafico;
-    MyEventReceiver* receiver;
+    Input* receiver;
 
-    Menu(Stage* stage,Personaje *pa,Personaje *pb,ISoundEngine* engine_sonido,Grafico* grafico,MyEventReceiver* receiver);
+    Menu(Stage* stage,Personaje *pa,Personaje *pb,ISoundEngine* engine_sonido,Grafico* grafico,Input* receiver);
     void loopMenu();
     bool dibujarImagen(video::ITexture* imagen);
     bool dibujarMenu(video::ITexture* imagen,int opcion,int opcion_stage);

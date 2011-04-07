@@ -38,6 +38,7 @@ class Modificador
 {
     public:
     //info
+    bool aplicar_a_contrario;
     std::string tipo;
     Personaje* personaje;
     std::string variable;
@@ -52,25 +53,25 @@ class Modificador
 class ModificadorImagen : public Modificador
 {
     public:
-    ModificadorImagen(video::ITexture* modificador,Personaje* personaje,std::string variable);
+    ModificadorImagen(video::ITexture* modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario);
 };
 
 class ModificadorEntero : public Modificador
 {
     public:
-    ModificadorEntero(int modificador,Personaje* personaje,std::string variable,bool relativo);
+    ModificadorEntero(int modificador,Personaje* personaje,std::string variable,bool relativo,bool aplicar_a_contrario);
 };
 
 class ModificadorBarra : public Modificador
 {
     public:
-    ModificadorBarra(Barra modificador,Personaje* personaje,std::string variable);
+    ModificadorBarra(Barra modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario);
 };
 
 class ModificadorHitboxes : public Modificador
 {
     public:
-    ModificadorHitboxes(vector <HitBox> modificador,Personaje* personaje,std::string variable);
+    ModificadorHitboxes(vector <HitBox> modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario);
 };
 
 class Frame
@@ -80,10 +81,10 @@ class Frame
     int duracion;
     Frame(int duracion);
     //modificadores
-    void agregarModificador(video::ITexture* modificador,Personaje* personaje,std::string variable);
-    void agregarModificador(int modificador,Personaje* personaje,std::string variable,bool relativo);
-    void agregarModificador(Barra modificador,Personaje* personaje,std::string variable);
-    void agregarModificador(vector <HitBox> modificador,Personaje* personaje,std::string variable);
+    void agregarModificador(video::ITexture* modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario);
+    void agregarModificador(int modificador,Personaje* personaje,std::string variable,bool relativo,bool aplicar_a_contrario);
+    void agregarModificador(Barra modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario);
+    void agregarModificador(vector <HitBox> modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario);
 };
 
 class Movimiento

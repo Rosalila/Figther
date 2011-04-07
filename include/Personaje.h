@@ -4,13 +4,15 @@ class Personaje
 {
     public:
     //paja
+    Personaje *personaje_contrario;
     Grafico* grafico;
     char* nombre;
     //logica
     char orientacion;
     std::string movimiento_actual;
     int tiempo_transcurrido;
-    bool saltando,saltando_adelante,saltando_atras;
+    std::string estado_posicion;
+    //bool saltando,saltando_adelante,saltando_atras;
     int frame_actual_saltando;
     //imagenes
     irr::core::map<std::string,video::ITexture*> imagenes;
@@ -46,12 +48,14 @@ class Personaje
     void agregarCancel(std::string cancelador,std::string cancelado);
     void agregarMovimiento(std::string movimiento);
     void agregarFrame(std::string movimiento, int duracion);
-    void agregarModificador(std::string movimiento,int frame,video::ITexture* modificador,Personaje* personaje,std::string variable);
-    void agregarModificador(std::string movimiento,int frame,int modificador,Personaje* personaje,std::string variable,bool relativo);
-    void agregarModificador(std::string movimiento,int frame,Barra modificador,Personaje* personaje,std::string variable);
-    void agregarModificador(std::string movimiento,int frame,vector <HitBox> modificador,Personaje* personaje,std::string variable);
+    void agregarModificador(std::string movimiento,int frame,video::ITexture* modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario);
+    void agregarModificador(std::string movimiento,int frame,int modificador,Personaje* personaje,std::string variable,bool relativo,bool aplicar_a_contrario);
+    void agregarModificador(std::string movimiento,int frame,Barra modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario);
+    void agregarModificador(std::string movimiento,int frame,vector <HitBox> modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario);
     //Logica
     bool ejectuarCancel(std::string input);
     bool verificarFinDeMovimiento();
     bool aplicarModificadores();
+    bool getColisionHitBoxes(HitBox hb_azul,HitBox hb_roja,int atacado_x,int atacado_y,int atacante_x,int atacante_y);
+    bool getColisionHitBoxes(Personaje *atacante,Personaje* atacado);
 };

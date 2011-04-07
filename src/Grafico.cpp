@@ -1,6 +1,6 @@
 #include "../include/Grafico.h"
 
-Grafico::Grafico(MyEventReceiver* receiver)
+Grafico::Grafico(Input* receiver)
 {
     video::E_DRIVER_TYPE driverType;
     driverType = video::EDT_OPENGL;

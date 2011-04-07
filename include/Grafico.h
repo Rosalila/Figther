@@ -4,7 +4,7 @@
 #include <stdlib.h>	// for itoa() call
 #include <irrlicht.h>
 using namespace irr;
-#include "../include/MyEventReceiver.h"
+#include "../include/Input.h"
 
 
 class Grafico
@@ -14,7 +14,7 @@ class Grafico
     video::IVideoDriver* driver;
     gui::IGUIFont* font;
 
-    Grafico(MyEventReceiver* receiver);
+    Grafico(Input* receiver);
     void draw2DImage	(
 	             irr::video::ITexture* texture,
 				 irr::core::dimension2d<irr::f32> size,
