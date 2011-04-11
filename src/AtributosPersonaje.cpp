@@ -8,7 +8,6 @@ Barra::Barra(int valor_maximo,int valor_actual,int modificador_periodico,int per
     this->periodo=periodo;
     this->color=color;
     this->posicion=posicion;
-    //this->imagenes=&imagenes;
 }
 Barra::Barra()
 {
@@ -21,10 +20,22 @@ HitBox::HitBox (int p1x,int p1y,int p2x,int p2y)
     this->p1y=p1y;
     this->p2x=p2x;
     this->p2y=p2y;
-    this->siguiente=siguiente;
 }
 
-ModificadorImagen::ModificadorImagen(video::ITexture* modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario)
+Imagen::Imagen(video::ITexture* imagen,int dimension_x,int dimension_y,int alineacion_x,int alineacion_y)
+{
+    this->imagen=imagen;
+    this->dimension_x=dimension_x;
+    this->dimension_y=dimension_y;
+    this->alineacion_x=alineacion_x;
+    this->alineacion_y=alineacion_y;
+}
+Imagen::Imagen()
+{
+
+}
+
+ModificadorImagen::ModificadorImagen(Imagen modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario)
 {
     tipo="imagen";
     this->personaje=personaje;
@@ -58,13 +69,21 @@ ModificadorHitboxes::ModificadorHitboxes(vector <HitBox> modificador,Personaje* 
     this->modificador_hitbox=modificador;
     this->aplicar_a_contrario=aplicar_a_contrario;
 }
+ModificadorString::ModificadorString(std::string modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario)
+{
+    tipo="string";
+    this->personaje=personaje;
+    this->variable=variable;
+    this->modificador_string=modificador;
+    this->aplicar_a_contrario=aplicar_a_contrario;
+}
 
 Frame::Frame(int duracion)
 {
     this->modificadores=vector<Modificador>();
     this->duracion=duracion;
 }
-void Frame::agregarModificador(video::ITexture* modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario)
+void Frame::agregarModificador(Imagen modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario)
 {
     modificadores.push_back(ModificadorImagen(modificador,personaje,variable,aplicar_a_contrario));
 }
@@ -79,6 +98,10 @@ void Frame::agregarModificador(Barra modificador,Personaje* personaje,std::strin
 void Frame::agregarModificador(vector <HitBox> modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario)
 {
     modificadores.push_back(ModificadorHitboxes(modificador,personaje,variable,aplicar_a_contrario));
+}
+void Frame::agregarModificador(std::string modificador,Personaje* personaje,std::string variable,bool aplicar_a_contrario)
+{
+    modificadores.push_back(ModificadorString(modificador,personaje,variable,aplicar_a_contrario));
 }
 
 Movimiento::Movimiento()

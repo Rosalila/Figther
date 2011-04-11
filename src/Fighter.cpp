@@ -1,10 +1,10 @@
 #include "../include/Fighter.h"
-Fighter::Fighter(Stage* stage,Personaje*pa,Personaje*pb,Input *receiver,Grafico *grafico,ISoundEngine *engine_sonido)
+Fighter::Fighter(Stage* stage,Personaje*pa,Personaje*pb,Input *receiver,Grafico *grafico,Sonido *sonido)
 {
     //Engines
     this->receiver=receiver;
     this->grafico=grafico;
-    this->engine_sonido=engine_sonido;
+    this->sonido=sonido;
 
     //Sets
     this->stage=stage;
@@ -13,6 +13,10 @@ Fighter::Fighter(Stage* stage,Personaje*pa,Personaje*pb,Input *receiver,Grafico 
     pa->personaje_contrario=pb;
     pb->personaje_contrario=pa;
 
+    sonido->agregarSonido("Fight!","resources/Stages/Sonidos/Fight1.wav");
+    sonido->agregarSonido("Fondo","resources/Stages/Sonidos/Now.ogg");
+    sonido->agregarSonido("Fondo2","resources/Stages/Sonidos/Something like this.mp3");
+
     //Menu
     //loopMenu();
 
@@ -20,7 +24,7 @@ Fighter::Fighter(Stage* stage,Personaje*pa,Personaje*pb,Input *receiver,Grafico 
     loopJuego();
 
     //Drops
-    engine_sonido->drop(); // delete engine
+    sonido->drop(); // delete engine
 }
 
 bool Fighter::getColisionHitBoxes(HitBox hb_azul,HitBox hb_roja,int atacado_x,int atacado_y,int atacante_x,int atacante_y)
@@ -68,9 +72,9 @@ bool Fighter::getColisionHitBoxes(Personaje *atacante,Personaje* atacado)
 
 void Fighter::logica(Personaje* personaje,std::string input,int tiempo)
 {
-    input=personaje->estado_posicion+input;
-    //avanzar tiempo
-    personaje->tiempo_transcurrido++;
+    input=personaje->getString("estado_posicion")+input;
+    //avanzar tiempo ++
+    personaje->setEntero("tiempo_transcurrido",personaje->getEntero("tiempo_transcurrido")+1);
     //si se termino
     personaje->verificarFinDeMovimiento();
     //si hay cancel, cambiar input
@@ -81,8 +85,11 @@ void Fighter::logica(Personaje* personaje,std::string input,int tiempo)
 
 void Fighter::loopJuego()
 {
-    irrklang::ISoundSource* shootSound = engine_sonido->addSoundSourceFromFile("resources/Stages/Sonidos/Fight1.wav");
-    engine_sonido->play2D(shootSound);
+    //irrklang::ISoundSource* shootSound = engine_sonido->addSoundSourceFromFile("resources/Stages/Sonidos/Fight1.wav");
+    //engine_sonido->play2D(shootSound);
+    //sonido->reproducir("resources/Stages/Sonidos/Fight1.wav");
+    sonido->reproducirSonido("Fight!");
+    sonido->reproducirSonido("Fondo");
 	std::string input="5";
 	std::string input2="5";
     f32 moveHorizontal = 0.f;
@@ -198,10 +205,10 @@ bool Fighter::render(Personaje* pa,Personaje* pb,Stage* stage)
         pb->dibujarBarra("hp");
 
         //Hit Boxes
-        pa->dibujarHitBoxes("azules",video::SColor(100,0,0,255));
-        pb->dibujarHitBoxes("azules",video::SColor(100,0,0,255));
-        pa->dibujarHitBoxes("rojas",video::SColor(100,255,0,0));
-        pb->dibujarHitBoxes("rojas",video::SColor(100,255,0,0));
+        pa->dibujarHitBoxes("azules",video::SColor(100,0,0,255),pa->getString("orientacion")=="i");
+        pb->dibujarHitBoxes("azules",video::SColor(100,0,0,255),pb->getString("orientacion")=="i");
+        pa->dibujarHitBoxes("rojas",video::SColor(100,255,0,0),pa->getString("orientacion")=="i");
+        pb->dibujarHitBoxes("rojas",video::SColor(100,255,0,0),pb->getString("orientacion")=="i");
 
         //FPS
         int lastFPS=-1;

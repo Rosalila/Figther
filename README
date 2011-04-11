@@ -1,2 +1,18 @@
-Agregar recursos descargandolos del siguiente link:
-http://www.mediafire.com/file/m4rfh2sdabd4x2h/resources.tar.gz
+Fighter de Rosalila
+===================
+PORHACER:
+
+Estructura
+-Diagrama UML
+
+Logica
+-Mejorar logica
+-Proyectiles
+-Barra de Super
+-Escalar todo
+-Terminar Inputs
+-Setear fps a 60
+
+Pruebas
+-Hacer nuevo Dummy
+-Verificar portabilidad con w
