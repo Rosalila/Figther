@@ -13,7 +13,7 @@ Fighter::Fighter(Stage* stage,Personaje*pa,Personaje*pb,Input *receiver,Grafico 
     pa->personaje_contrario=pb;
     pb->personaje_contrario=pa;
 
-    sonido->agregarSonido("Fight!","resources/Stages/Sonidos/Fight1.wav");
+    //sonido->agregarSonido("Fight!","resources/Stages/Sonidos/Fight1.wav");
     sonido->agregarSonido("Fondo","resources/Stages/Sonidos/Now.ogg");
     sonido->agregarSonido("Fondo2","resources/Stages/Sonidos/Something like this.mp3");
 
@@ -88,7 +88,7 @@ void Fighter::loopJuego()
     //irrklang::ISoundSource* shootSound = engine_sonido->addSoundSourceFromFile("resources/Stages/Sonidos/Fight1.wav");
     //engine_sonido->play2D(shootSound);
     //sonido->reproducir("resources/Stages/Sonidos/Fight1.wav");
-    sonido->reproducirSonido("Fight!");
+    //sonido->reproducirSonido("Fight!");
     sonido->reproducirSonido("Fondo");
 	std::string input="5";
 	std::string input2="5";
